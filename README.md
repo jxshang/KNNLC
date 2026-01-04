@@ -5,7 +5,7 @@
 ## Usage
 ### Installation
 ```bash
-git clone git@github.com:zkoladzl/KCACL.git
+git clone git@github.com/jxshang/KNNLC.git
 ```
 ### representation Learning
 Some AL algorithms(e.g., ProbCover) relys on unsupervised representation. We train SimCLR with a backbone of ResNet-18 on all of training data of a dataset. An example of CIFAR-10 is as follows:
@@ -14,6 +14,9 @@ cd scan
 python simclr.py --config_env configs/env.yml --config_exp configs/pretext/simclr_cifar10.yml
 ```
 When the training is over, the file `./results/cifar-10/pretext/features_seed1.npy` should exist. This file is unsupervised representation applied to querying functions of some AL algorithms. 
+
+Note that  the pretraining phase does not include any test samples.
+
 ### active learning
 ```bash
 cd deep-al/tools
