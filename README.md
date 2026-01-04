@@ -1,6 +1,6 @@
 # Boosting Low-budget Active Learning with Label Calibration and Unsupervised Representations
 
-**Authors**: Yincheng Han, Jiaxing Shang*, et al.
+**Authors**: Yincheng Han, Xu Li, Jiaxing Shang*, et al.
 
 ## Usage
 ### Installation
