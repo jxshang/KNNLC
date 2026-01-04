@@ -20,8 +20,8 @@ def calibrate_unlabeled_acc_by_KCALC(train_set_ground_truth, uSet_path, forgetti
     return acc_list
 
 def argparser():
-    parser = argparse.ArgumentParser(description='KCALC')
-    parser.add_argument('--dataset', default='CIFAR10', help='dataset name', type=str, choices = ['CIFAR10', 'CIFAR100', 'TINYIMAGENET'])
+    parser = argparse.ArgumentParser(description='KNNLC')
+    parser.add_argument('--dataset', default='CIFAR10', help='dataset name', type=str, choices = ['CIFAR10', 'CIFAR100', 'TINYIMAGENET', 'ISIC'])
     parser.add_argument('--model', default = 'resnet18', type=str)
     parser.add_argument('--start-epoch', default = 100, type=int)
     parser.add_argument('--last-epoch', default = 149, type=int)

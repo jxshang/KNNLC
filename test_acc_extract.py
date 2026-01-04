@@ -9,9 +9,10 @@ def calibrated_test_acc_by_KCALC(unlabeled_features,
     ):
     acc_list = []
     for ed in episode_dirs:
+        # Load the representations of the unlabeled data extracted from the pretrained model
         uSet = np.load(uset_path.format(ed), allow_pickle=True).astype(np.int)
         pretrained_model_unlabeled_features = unlabeled_features[uSet.tolist()]
-        
+        # Pseudo Label Calibration
         forgetting_events = None
         for epoch in range(start_epoch, last_epoch + 1):
             if forgetting_events is None:
@@ -19,6 +20,8 @@ def calibrated_test_acc_by_KCALC(unlabeled_features,
             else:
                 forgetting_events += torch.load(forgetting_events_path.format(ed, epoch)).cuda()
         calibrated_labels = torch.argmax(forgetting_events, dim = 1).cpu()
+
+        # KNN-based Prediction Label Calibration
         distance = torch.cdist(test_features, pretrained_model_unlabeled_features).cpu()
         _, min_indice = torch.topk(distance, k, dim = 1, largest=False)
         prediction = torch.zeros(test_size, dtype = torch.long)
@@ -28,8 +31,8 @@ def calibrated_test_acc_by_KCALC(unlabeled_features,
     return acc_list
 
 def argparser():
-    parser = argparse.ArgumentParser(description='KCALC')
-    parser.add_argument('--dataset', default='CIFAR10', help='dataset name', type=str, choices = ['CIFAR10', 'CIFAR100', 'TINYIMAGENET'])
+    parser = argparse.ArgumentParser(description='KNNLC')
+    parser.add_argument('--dataset', default='CIFAR10', help='dataset name', type=str, choices = ['CIFAR10', 'CIFAR100', 'TINYIMAGENET', 'ISIC'])
     parser.add_argument('--model', default = 'resnet18', type=str)
     parser.add_argument('--start-epoch', default = 100, type=int)
     parser.add_argument('--last-epoch', default = 149, type=int)
@@ -38,10 +41,11 @@ def argparser():
     return parser
 if __name__ == '__main__':
     args = argparser().parse_args()
-    dataset_name_conversion = {'CIFAR10':'cifar-10', 'CIFAR100':'cifar-100', 'TINYIMAGENET':'tiny-imagenet'}
-    unlabeled_features_path = f'./scan/results/{dataset_name_conversion[args.dataset]}/pretext/features_seed1.npy'
-    test_features_path = f'./scan/results/{dataset_name_conversion[args.dataset]}/pretext/test_features_seed1.npy'
+    dataset_name_conversion = {'CIFAR10':'cifar-10', 'CIFAR100':'cifar-100', 'TINYIMAGENET':'tiny-imagenet', 'ISIC':'isic'}
+    unlabeled_features_path = f'./results/{dataset_name_conversion[args.dataset]}/pretext/features_seed1.npy'
+    test_features_path = f'./results/{dataset_name_conversion[args.dataset]}/pretext/test_features_seed1.npy'
     read_base_path = f'./output/{args.dataset}/{args.model}/'
+    # Load the representations of the unlabeled data and test dataset extracted from the pretrained model
     if unlabeled_features_path.endswith('.pt'):
         unlabeled_features = torch.load(unlabeled_features_path).cuda()
         test_features = torch.load(test_features_path).cuda()
